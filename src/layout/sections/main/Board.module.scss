@@ -1,0 +1,13 @@
+@use "../../../styles/variables" as *;
+
+.main {
+  padding: $baseUnit*5 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: cadetblue;
+}
+
+.mainWrapper {
+  display: flex;
+}
