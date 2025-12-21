@@ -3,6 +3,7 @@
 .main {
   padding: $baseUnit*5 20px;
   display: flex;
+  flex-wrap: wrap;
   flex-direction: column;
   height: 100vh;
   background-color: cadetblue;
