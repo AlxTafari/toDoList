@@ -1,0 +1,16 @@
+@use '../../styles/variables' as *;
+
+.button {
+  padding: $baseUnit;
+  border: 1px solid black;
+  border-radius: $baseUnit;
+  font-weight: 500;
+  max-width: 150px;
+  max-height: 40px;
+}
+
+.button:hover {
+  border: 1px solid blue;
+  color: blue;
+
+}

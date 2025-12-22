@@ -53,27 +53,32 @@ export const Todolist = ({
     }
     return (
         <div className={s.todolistWrapper}>
-            <Button callback={onDeleteListHandler} title={"удалить лист"}/>
-            <h3> {title} </h3>
+            <h3 className={s.listTitle}>
+                {title}
+                <Button className={s.push} callback={onDeleteListHandler} title={"x"}/>
+            </h3>
+            <div className={s.inputWrapper}>
+                <input className={s.inputAddTask} value={value}
+                       onKeyDown={onKeyDownHandler}
+                       onChange={onInputChange}
+                       type={"text"} placeholder={"не забыть..."}/>
+                <Button className={s.push} callback={onAddTaskHandler} title={"+"}/>
+            </div>
 
-            <input value={value}
-                   onKeyDown={onKeyDownHandler}
-                   onChange={onInputChange}
-                   type={"text"} placeholder={"не забыть..."}/>
-            <Button callback={onAddTaskHandler} title={"+"}/>
             {error && <div style={{color: "brown"}}>{error}</div>}
-            <ul>
+            <ul className={s.tasks}>
                 {tasks.map((task: TaskType) => {
                     const onChangeTaskStatusHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
                         onChangeTask(task.id, e.currentTarget.checked, tlistId);
                     }
-                    return (<li key={task.id}>
+                    return (<li className={s.row}
+                            key={task.id}>
                             <input type={"checkbox"}
                                    checked={task.isDone}
                                    onChange={onChangeTaskStatusHandler}/>
 
                             {task.title}
-                            <Button title={"add"} callback={() => {
+                            <Button className={s.push} title={"x"} callback={() => {
                                 onDeleteTask(task.id, tlistId)
                             }}/>
                         </li>
@@ -81,16 +86,17 @@ export const Todolist = ({
                 })}
 
             </ul>
-
+            <div className={s.buttonWrapper}>
             {buttonArr.map((b: FilterType) => {
                 const onClickButtonHandler = () => onFilterChange(b, tlistId);
 
                 return (<Button
                         title={b}
-                        className={s.buttonFilter}
+                        // className={s.buttonFilter}
                         callback={onClickButtonHandler}/>
                 )
             })}
+            </div>
         </div>
     )
 

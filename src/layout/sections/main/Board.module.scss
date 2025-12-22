@@ -5,10 +5,14 @@
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
-  height: 100vh;
   background-color: cadetblue;
 }
 
 .mainWrapper {
   display: flex;
 }
+
+.addListBtn {
+  width: 100%;
+}
+

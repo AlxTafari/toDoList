@@ -1,14 +1,15 @@
-import react from "@vitejs/plugin-react";
+import s from "./Button.module.scss"
+import clsx from "clsx";
 
 type Props = {
     title: string;
     callback: () => void;
-    className: 
+    className?: string;
 };
-export const Button = ({title, callback}: Props) => {
+export const Button = ({title, callback, className}: Props) => {
     const onButtonHandler = () => callback()
 
     return (
-        <button onClick={onButtonHandler}>{title}</button>
+        <button  className={clsx(s.button, className)} onClick={onButtonHandler}>{title}</button>
     );
 };

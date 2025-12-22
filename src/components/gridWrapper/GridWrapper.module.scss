@@ -1,0 +1,19 @@
+/* GridWrapper.module.scss */
+
+$default-gap: 1rem;
+
+/* Гибкий миксин сетки */
+@mixin grid-wrapper($cols: 12, $gap: $default-gap) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(calc(100% / $cols), 1fr));
+  gap: $gap;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Класс по умолчанию, который можно использовать напрямую */
+.gridWrapper {
+  @include grid-wrapper(); /* По умолчанию 12 колонок, gap 1rem */
+}

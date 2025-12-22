@@ -2,6 +2,8 @@ import s from "./Board.module.scss"
 import {Todolist} from "../../../components/todolist/Todolist.tsx";
 import {useState} from "react";
 import {v1} from "uuid";
+import {GridWrapper} from "../../../components/gridWrapper/GridWrapper.tsx";
+import {Button} from "../../../components/button/Button.tsx";
 
 type BoardType = {
     title: string,
@@ -95,7 +97,8 @@ export const Board = ({title}: BoardType) => {
     return (
         <section className={s.main}>
             <h2>{title}</h2>
-            <div className={s.mainWrapper}>
+
+            <GridWrapper cols={5} >
                 {todolists.map((tl) => {
                     // const tasksObj = tasksObj[tl.id]
                     const currentTasks = tl.filter === "all"
@@ -117,8 +120,8 @@ export const Board = ({title}: BoardType) => {
                                      onDeleteList={onDeleteList}
                     />
                 })}
-                <button onClick={()=>{onAddNewList(("List № " + ListNum))}}>Добавить список задач</button>
-            </div>
+                <Button className={s.addListBtn} title={"add list"} callback={()=>{onAddNewList(("List № " + ListNum))}} />
+            </GridWrapper>
         </section>
     );
 };
