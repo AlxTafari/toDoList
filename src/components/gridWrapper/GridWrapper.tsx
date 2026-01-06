@@ -1,17 +1,58 @@
-import React from "react";
-import styles from "./GridWrapper.module.scss";
+import type { CSSProperties, ReactNode } from "react";
+import s from "./GridWrapper.module.scss";
 
-type GridWrapperProps = {
-    children: React.ReactNode;
-    cols?: number;  // количество колонок, по умолчанию 12
-    gap?: string;   // gap, например "2rem"
+type Props = {
+    children: ReactNode;
+
+    columnTemplate?: string;
+    columns?: number;
+    gap?: string;
+    rowGap?: string;
+    minColumnWidth?: string;
+    maxColumnWidth?: string;
+    place?: string;
 };
 
-export const GridWrapper = ({ children, cols = 12, gap }: GridWrapperProps) => {
-    const style = {
-        gap,
-        gridTemplateColumns: `repeat(auto-fit, minmax(calc(100% / ${cols}), 1fr))`,
+export const GridWrapper = ({
+                                children,
+                                columnTemplate,
+                                columns,
+                                gap,
+                                rowGap,
+                                minColumnWidth,
+                                maxColumnWidth,
+                                place,
+                            }: Props) => {
+    const style: CSSProperties & {
+        "--grid-template"?: string;
+        "--grid-gap"?: string;
+        "--grid-row-gap"?: string;
+        "--grid-place"?: string;
+    } = {
+        ...(columnTemplate && {
+            "--grid-template": columnTemplate,
+        }),
+
+        ...(columns && {
+            "--grid-template": `repeat(${columns}, 1fr)`,
+        }),
+
+        ...(!columnTemplate &&
+            !columns && {
+                "--grid-template": `repeat(auto-fit, minmax(${
+                    minColumnWidth || "200px"
+                }, ${maxColumnWidth || "1fr"}))`,
+            }),
+
+        ...(gap && { "--grid-gap": gap }),
+        ...(rowGap && { "--grid-row-gap": rowGap }),
+        ...(place && { "--grid-place": place }),
     };
 
-    return <div className={styles.gridWrapper} style={style}>{children}</div>;
+    return (
+        <div className={s.grid} style={style}>
+            {children}
+        </div>
+    );
 };
+

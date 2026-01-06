@@ -1,24 +1,18 @@
 @use "../../styles/variables" as *;
 
 .todolist-Wrapper {
+  max-width: 300px;
+  max-height: 380px;
   display: flex;
   flex-direction: column;
-  max-width: 275px;
   gap: $baseUnit;
   border: 1px solid red;
   padding: $baseUnit*2;
   background-color: #c5c3c3;
   border-radius: $baseUnit*2;
-  min-height: 300px;
+
+
 }
-
-//li {
-//  display: flex;
-//  flex-direction: row;
-//  list-style: none;
-//  gap: $baseUnit;
-//}
-
 .listTitle {
   display: flex;
   align-items: center; /* по центру по вертикали */
@@ -33,6 +27,7 @@
   border-radius: $baseUnit;
   font-weight: 500;
   max-height: 40px;
+
 }
 
 .inputWrapper {
@@ -40,8 +35,18 @@
   align-items: center; /* по центру по вертикали */
   //justify-content: space-between; /* кнопка справа */
   gap: $baseUnit; /* расстояние между текстом и кнопкой */
+  position: relative;
+}
 
-
+.inputWrapper::after {
+  content: attr(data-length);
+  position: absolute;
+  right: $baseUnit*4;
+  top: -$baseUnit;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #555;
+  pointer-events: none;
 }
 
 .buttonWrapper {
@@ -52,15 +57,25 @@
   margin-top: auto;
 }
 
-
 .row {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
   list-style: none;
-  gap: $baseUnit/2;
-  padding-right: $baseUnit
+  gap: 4px;
+  padding-right: $baseUnit;
+}
+
+.task {
+
+}
+
+.task-isDone {
+  @extend .task;
+  opacity: 0.5;
+  font-style: italic;
+  text-decoration: line-through;
 }
 
 .push {
@@ -70,4 +85,8 @@
 .tasks {
   max-height: 180px;
   overflow-y: auto;
+  min-width: 0;              // для flex
+  white-space: normal;       // разрешаем перенос
+  overflow-wrap: anywhere;   // ломаем длинные слова
+  word-break: break-word;
 }

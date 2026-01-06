@@ -1,9 +1,9 @@
 import s from "./Board.module.scss"
 import {Todolist} from "../../../components/todolist/Todolist.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {v1} from "uuid";
 import {GridWrapper} from "../../../components/gridWrapper/GridWrapper.tsx";
-import {Button} from "../../../components/button/Button.tsx";
+import {CreateItemForm} from "../../../components/input/CreateItemForm.tsx";
 
 type BoardType = {
     title: string,
@@ -15,7 +15,10 @@ type TodolistType = {
     id: string;
     title: string;
     filter: FilterType;
+}
 
+type TasksStateType = {
+    [key: string]: TaskType[]
 }
 
 export type TaskType = {
@@ -57,28 +60,60 @@ export const Board = ({title}: BoardType) => {
         }
 
     }
+    const changeTaskTitle = (id: TaskType["id"], newTitle: string, todolistId: string) => {
+        const tasks = tasksObj[todolistId]
+        const task = tasks.find(t => t.id === id)
+        if (task) {
+            task.title = newTitle
+            setTasksObj({...tasksObj})
+        }
+    }
 
     const todolistId1 = v1();
-    const todolistId2 = v1()
+    const todolistId2 = v1();
 
-    const [todolists, setTodolists] = useState<TodolistType[]>([
-        {id: todolistId1, title: "Первый тудулист", filter: "all"},
-        {id: todolistId2, title: "Второй тудулист", filter: "all"},
-    ])
 
-    const [tasksObj, setTasksObj] = useState({
+    const defaultTodolists: TodolistType[] = [
+        {id: todolistId1, title: "Создаем тудулист", filter: "all"},
+        {id: todolistId2, title: "Список покупок", filter: "all"},
+    ]
+
+    const [todolists, setTodolists] = useState<TodolistType[]>(()=> {
+            const strTodolists = localStorage.getItem('todolists')
+            return strTodolists ? JSON.parse(strTodolists) : defaultTodolists
+        }
+        // [
+        //     {id: todolistId1, title: "Создаем тудулист", filter: "all"},
+        //     {id: todolistId2, title: "Список покупок", filter: "all"},
+        // ]
+    )
+
+    useEffect(() => {
+        localStorage.setItem('todolists', JSON.stringify(todolists))
+    }, [todolists])
+
+    const [tasksObj, setTasksObj] = useState<TasksStateType>(() => {
+        const str = localStorage.getItem("tasks")
+        return str ? JSON.parse(str) : {
             [todolistId1]: [
                 {id: v1(), title: "сделать базовую структуру", isDone: true},
-                {id: v1(), title: "сделать логику", isDone: false},
+                {id: v1(), title: "сделать логику", isDone: true},
                 {id: v1(), title: "довести структуру до ума", isDone: false},
+                {id: v1(), title: "добавить localStorage", isDone: true},
             ],
             [todolistId2]: [
-                {id: v1(), title: "Купить воду", isDone: true},
-                {id: v1(), title: "Купить слона", isDone: false},
-
+                {id: v1(), title: "Вода", isDone: true},
+                {id: v1(), title: "Хлеб", isDone: false},
+                {id: v1(), title: "Соль", isDone: false},
             ],
         }
-    )
+    })
+
+    useEffect(() => {
+        localStorage.setItem("tasks", JSON.stringify(tasksObj))
+    }, [tasksObj])
+
+
 
     const onAddNewList = (title: TodolistType["title"]) => {
         const newList = v1()
@@ -90,23 +125,26 @@ export const Board = ({title}: BoardType) => {
 
     const onDeleteList = (todolistId: string) => {
         setTodolists([...todolists.filter(t => t.id !== todolistId)])
-        delete tasksObj[todolistId]
+        const copyTasks = {...tasksObj}
+        delete copyTasks[todolistId]
+        setTasksObj({...copyTasks})
     }
-    const ListNum = todolists.length + 1;
 
+    const changeListTitle = (todolistID: string, title: string) => {
+        setTodolists([...todolists.map(t => t.id === todolistID ? {...t, title}  : t)])
+    }
     return (
         <section className={s.main}>
+            <CreateItemForm createItem={onAddNewList} placeholder={"новый список"} />
             <h2>{title}</h2>
 
-            <GridWrapper cols={5} >
+            <GridWrapper minColumnWidth={"300px"} rowGap={"1rem"}>
                 {todolists.map((tl) => {
-                    // const tasksObj = tasksObj[tl.id]
                     const currentTasks = tl.filter === "all"
                         ? tasksObj[tl.id]
                         : tl.filter === "active"
                             ? tasksObj[tl.id].filter(task => !task.isDone)
                             : tasksObj[tl.id].filter(task => task.isDone)
-
 
 
                     return <Todolist key={tl.id}
@@ -117,10 +155,11 @@ export const Board = ({title}: BoardType) => {
                                      onDeleteTask={onDeleteTask}
                                      onAddTask={createTask}
                                      onChangeTask={onChangeTask}
+                                     onChangeTaskTitle={changeTaskTitle}
+                                     onChangeListTitle={changeListTitle}
                                      onDeleteList={onDeleteList}
                     />
                 })}
-                <Button className={s.addListBtn} title={"add list"} callback={()=>{onAddNewList(("List № " + ListNum))}} />
             </GridWrapper>
         </section>
     );

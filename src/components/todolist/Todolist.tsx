@@ -1,7 +1,8 @@
 import s from "./Todolist.module.scss";
 import type {FilterType, TaskType} from "../../layout/sections/main/Board.tsx";
-import {useState} from "react";
 import {Button} from "../button/Button.tsx";
+import {TitleEditor} from "../titleEditor/TitleEditor.tsx";
+import {CreateItemForm} from "../input/CreateItemForm.tsx";
 
 type Props = {
     title: string;
@@ -11,6 +12,8 @@ type Props = {
     onDeleteTask: (id: TaskType["id"], todolistId: string) => void;
     onAddTask: (title: TaskType["title"], todolistId: string) => void;
     onChangeTask: (id: TaskType["id"], isDone: TaskType["isDone"], todolistId: string) => void;
+    onChangeTaskTitle: (id: TaskType["id"], title: string, todolistId: string ) => void;
+    onChangeListTitle: (todolistId: string, title: string, ) => void;
     onDeleteList: (todolistId: string) => void;
 };
 
@@ -22,62 +25,49 @@ export const Todolist = ({
                              onAddTask,
                              tlistId,
                              onDeleteList,
-                             onChangeTask
+                             onChangeTask,
+                             onChangeTaskTitle,
+                             onChangeListTitle,
                          }: Props) => {
+
     const buttonArr: FilterType[] = ["all", "active", "completed"];
 
-    const [value, setValue] = useState("");
-    const [error, setError] = useState("");
-
-    const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setError("");
-        setValue(e.currentTarget.value);
-    }
-
-    const onAddTaskHandler = () => {
-        if (value.trim() !== "") {
-            onAddTask(value, tlistId);
-            setValue("");
-        } else {
-            setError("Поле не может быть пустым")
-        }
+    const onAddTaskHandler = (title:string) => {
+        onAddTask(title, tlistId);
     };
 
-    const onKeyDownHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
-            onAddTaskHandler()
-        }
-    }
     const onDeleteListHandler = () => {
         onDeleteList(tlistId)
+    }
+
+    const onChangeListTitleHandler = (title: string) => {
+        onChangeListTitle(tlistId, title);
     }
     return (
         <div className={s.todolistWrapper}>
             <h3 className={s.listTitle}>
-                {title}
+                <TitleEditor title={title} onChange={onChangeListTitleHandler} />
                 <Button className={s.push} callback={onDeleteListHandler} title={"x"}/>
             </h3>
-            <div className={s.inputWrapper}>
-                <input className={s.inputAddTask} value={value}
-                       onKeyDown={onKeyDownHandler}
-                       onChange={onInputChange}
-                       type={"text"} placeholder={"не забыть..."}/>
-                <Button className={s.push} callback={onAddTaskHandler} title={"+"}/>
-            </div>
-
-            {error && <div style={{color: "brown"}}>{error}</div>}
+            <CreateItemForm createItem={onAddTaskHandler} placeholder={"не забыть.."} />
             <ul className={s.tasks}>
                 {tasks.map((task: TaskType) => {
                     const onChangeTaskStatusHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
                         onChangeTask(task.id, e.currentTarget.checked, tlistId);
                     }
-                    return (<li className={s.row}
+                    const onChangeTaskTitleHandler = (newTitle: string) => {
+                        onChangeTaskTitle(task.id, newTitle, tlistId );
+                    }
+                    return (
+                            <li className={s.row}
                             key={task.id}>
                             <input type={"checkbox"}
                                    checked={task.isDone}
                                    onChange={onChangeTaskStatusHandler}/>
+                            <span className={task.isDone ? s.taskIsDone : s.task}>
+                               <TitleEditor title={task.title} onChange={onChangeTaskTitleHandler}/>
+                            </span>
 
-                            {task.title}
                             <Button className={s.push} title={"x"} callback={() => {
                                 onDeleteTask(task.id, tlistId)
                             }}/>
